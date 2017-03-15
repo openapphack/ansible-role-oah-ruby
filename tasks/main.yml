@@ -1,20 +1,17 @@
 ---
-# Include OS-specific installation tasks.
-- include: setup-Debian.yml
-  when: (ruby_install_from_source == false) and (ansible_os_family == 'Debian')
+- include: tasks/oah-install.yml
+  when: oah_command == "install"
 
-# Install ruby from source when ruby_install_from_source is true.
-- include: install-from-source.yml
-  when: ruby_install_from_source == true
+- include: tasks/oah-update.yml
+  when: oah_command == "update"
 
-# Install Bundler and configured gems.
-- name: Install Bundler.
-  gem: name=bundler state=present user_install=no
+- include: tasks/oah-remove.yml
+  when: oah_command == "remove"
 
-- name: Add bundle symlink.
-  file: src=/usr/local/bin/bundle dest=/usr/bin/bundle state=link
-  when: ruby_install_from_source == true
+- include: tasks/oah-reset.yml
+  when: oah_command == "reset"
 
-- name: Install configured gems.
-  gem: "name={{ item }} state=present"
-  with_items: ruby_install_gems
+- include: tasks/oah-validate.yml
+  when: oah_command == "validate"
+
+#- include: tasks/oah-{{ oah_command }}.yml
